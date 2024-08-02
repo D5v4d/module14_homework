@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <input class="numer" type="text" placeholder="Номер страницы" />
+      <input class="lymit" type="text" placeholder="Лимит" />
+      <button class="btn">запрос</button>
+      <br />
+      <br />
+      <div class="conteiner"></div>
+    </div>
+    <script>
+      const btn = document.querySelector(".btn");
+
+      btn.addEventListener("click", () => {
+        const valueNumber = document.querySelector(".numer").value;
+        const valueLimit = document.querySelector(".lymit").value;
+        const conteiner = document.querySelector(".conteiner");
+
+        if (valueNumber < 0 || valueNumber > 10) {
+          conteiner.innerHTML = "Номер страницы вне диапазона от 1 до 10";
+        } else if (valueLimit < 0 || valueLimit > 10) {
+          conteiner.innerHTML = "Лимит вне диапазона от 1 до 10";
+        }
+
+        if (
+          (valueNumber < 0 || valueNumber > 10 || !isNumeric(valueNumber)) &&
+          (valueLimit < 0 || valueLimit > 10 || !isNumeric(valueLimit))
+        ) {
+          conteiner.innerHTML =
+            "Номер страницы и лимит вне диапазона от 1 до 10";
+        } else {
+          useRequest(
+            `https://jsonplaceholder.typicode.com/photos?_page=${valueNumber}&_limit=${valueLimit}`,
+            displayResult
+          );
+        }
+
+        function useRequest(url, callback) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+
+          xhr.onload = function () {
+            if (xhr.status != 200) {
+              console.log("Статус ответа: ", xhr.status);
+            } else {
+              const result = JSON.parse(xhr.response);
+              if (callback) {
+                callback(result);
+              }
+            }
+          };
+
+          xhr.onerror = function () {
+            console.log("Ошибка! Статус ответа: ", xhr.status);
+          };
+
+          xhr.send();
+        }
+
+        function displayResult(apiData) {
+          let cards = "";
+          for (let i = 0; i < apiData.length; i++) {
+            cards += `<img src="${apiData[i].url}" alt="image-${i + 1}">`;
+          }
+          conteiner.innerHTML = cards;
+        }
+
+        function isNumeric(value) {
+          return /^\d+$/.test(value);
+        }
+
+        function displayResult(apiData) {
+          let cards = "";
+          for (let i = 0; i < apiData.length; i++) {
+            cards += `<img src="${apiData[i].url}" alt="image-${i + 1}">`;
+          }
+          conteiner.innerHTML = cards;
+
+          localStorage.setItem("apiData", JSON.stringify(apiData));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          const storedData = localStorage.getItem("apiData");
+          if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            displayResult(parsedData);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

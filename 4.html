@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <input class="one" type="text" />
+      <input class="twe" type="text" />
+      <button class="btn">отправить</button>
+      <br>
+      <br>
+      <div class="conteiner"></div>
+    </div>
+    <script>
+      const btn = document.querySelector(".btn");
+
+      btn.addEventListener("click", () => {
+        const valueOne = document.querySelector(".one").value;
+        const valueTwe = document.querySelector(".twe").value;
+        const conteiner = document.querySelector(".conteiner");
+
+        if (valueOne < 100 || valueOne > 300 || valueTwe < 100 || valueTwe > 300) {
+          conteiner.innerHTML = "Одно из чисел вне диапазона от 100 до 300."
+        } else {
+
+        fetch(`https://dummyimage.com/${valueOne}x${valueTwe}`)
+
+                .then(response => {
+                    return response.blob();
+                })
+
+                .then(blob => {
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.querySelector(".conteiner").innerHTML = `<img src="${imageUrl}">`;
+                })
+                .catch(error => {
+                    console.error('Ошибка', error);
+                });
+        }
+      });
+    </script>
+  </body>
+</html>
